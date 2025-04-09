@@ -6,14 +6,17 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    public function showRegisterForm(){
+    public function showRegisterForm()
+    {
         return view('auth.register');
     }
 
-    public function register(Request $request){
+    public function register(Request $request)
+    {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -29,29 +32,31 @@ class AuthController extends Controller
         return redirect()->route('login.form')->with('success', '登録が完了しました!');
     }
 
-    public function showLoginForm(){
+    public function showLoginForm()
+    {
         return view('auth.login');
     }
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required|password|',
+            'password' => ['required', 'string', Password::min(8)],
         ]);
 
-        if(Auth::attempt($credentials)){
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
             return redirect()->intended('dashboard');
         }
 
-            return back()->withErrors([
-                "Inccorect email or password",
-            ]);
-
+        return back()->withErrors([
+            "Inccorect email or password",
+        ])->withInput();
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

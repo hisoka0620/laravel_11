@@ -7,8 +7,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function(){
-    return view('dashboard');
+Route::get('/dashboard', function () {
+    return view('auth.dashboard');
 })->middleware('auth')->name('dashboard');
 
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
