@@ -36,6 +36,13 @@
         </div>
     </div>
 
+    <div class="mt-4">
+        <label class="inline-flex items-center">
+            <input type="checkbox" name="remember" class="form-checkbox text-blue-600">
+            <span class="ml-2 text-sm text-gray-700">Remember Me</span>
+        </label>
+    </div>
+
     <div class="flex justify-center">
         <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Login</button>
     </div>
