@@ -6,6 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'ToDo Dashboard')</title>
     @vite(['resources/css/app.css'])
 </head>
@@ -19,7 +20,7 @@
                 <a href="{{ route('tasks.index') }}" class="hover:text-blue-500">To-Do List</a>
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-                    <button type="submit" class="text-red-500 hover:underline ">Logout</button>
+                    <button type="submit" class="text-red-500 hover:underline hover:cursor-pointer">Logout</button>
                 </form>
             </nav>
         </div>
@@ -29,5 +30,6 @@
         @yield('content')
     </main>
 </body>
+@stack('scripts')
 
 </html>
