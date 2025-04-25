@@ -76,4 +76,15 @@ class TaskController extends Controller
 
         return redirect()->route('tasks.index')->with('success', 'Task delete successfully');
     }
+
+    public function toggleStatusAjax(Task $task)
+    {
+        $task->status = $task->status === 'completed' ? 'in_progress' : 'completed';
+        $task->save();
+
+        return response()->json([
+            'status' => $task->status,
+            'message' => 'Task status updated successfully!',
+        ]);
+    }
 }
