@@ -10,7 +10,6 @@ class TaskController extends Controller
 {
     public function index()
     {
-
         $tasks = Task::where('user_id', auth()->id())->get();
 
         return view('tasks.index', compact('tasks'));
@@ -26,8 +25,8 @@ class TaskController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'status' => 'required|in:not_started,in_progress,completed',
-            'priority' => 'required|in:low,medium,high',
+            'status' => 'required|in:not_started,in_progress,pending,completed',
+            'priority' => 'required|in:none,low,medium,high',
             'due_date' => 'date|nullable',
         ]);
 
@@ -56,8 +55,8 @@ class TaskController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'status' => 'required|in:not_started,in_progress,completed',
-            'priority' => 'required|in:low,medium,high',
+            'status' => 'required|in:not_started,in_progress,pending,completed',
+            'priority' => 'required|in:none,low,medium,high',
             'due_date' => 'date|nullable',
         ]);
 
@@ -79,7 +78,15 @@ class TaskController extends Controller
 
     public function toggleStatusAjax(Task $task)
     {
-        $task->status = $task->status === 'completed' ? 'in_progress' : 'completed';
+
+        if($task->status === 'completed'){
+            $task->status = $task->previous_status ?? 'pending';
+            $task->previous_status = null;
+        }else{
+            $task->previous_status = $task->status;
+            $task->status = 'completed';
+        }
+
         $task->save();
 
         return response()->json([
