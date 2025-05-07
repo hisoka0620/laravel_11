@@ -4,10 +4,6 @@
 
 @section('content')
 
-@php
-$unfinishedCount = $tasks->where('status', '!=', 'completed')->count();
-@endphp
-
 <h1 class="text-3xl font-bold mb-6">Welcome, {{ Auth::user()->name }} 👋</h1>
 
 <h2 class="text-2xl font-semibold mb-6">📝 Your To-Do List</h2>
@@ -67,7 +63,8 @@ $unfinishedCount = $tasks->where('status', '!=', 'completed')->count();
                 <span>Status:
                     <span class="font-semibold capitalize {{
                         $task->status === 'completed' ? 'bg-green-100 text-green-700' :
-                        ($task->status === 'in_progress' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700')
+                        ($task->status === 'in_progress' ? 'bg-yellow-100  text-yellow-700' :
+                        ($task->status === 'pending' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-700'))
                     }}">
                         {{ ucfirst(str_replace('_', ' ', $task->status)) }}
                         @if($task->status === 'completed')
@@ -77,7 +74,7 @@ $unfinishedCount = $tasks->where('status', '!=', 'completed')->count();
                 </span>
                 <span>Priority:
                     <span
-                        class="font-semibold capitalize {{ $task->priority === 'low' ? 'text-blue-600' : ($task->priority === 'medium' ? 'text-green-500' : 'text-red-600') }}">{{
+                        class="font-semibold capitalize {{ $task->priority === 'low' ? 'text-blue-600' : ($task->priority === 'medium' ? 'text-green-500' : ($task->priority === 'high' ? 'text-red-600' : 'text-gray-700')) }}">{{
                         $task->priority }}</span>
                 </span>
                 <span>Due date:

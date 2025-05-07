@@ -12,7 +12,9 @@ class DashboardController extends Controller
 
         $tasks = Task::where('user_id', auth()->id())->get();
 
-        return view('auth.dashboard', compact('tasks'));
-        
+        $unfinishedCount = $tasks->where('status', '!=', 'completed')->count();
+
+        return view('auth.dashboard', compact('tasks', 'unfinishedCount'));
+
     }
 }

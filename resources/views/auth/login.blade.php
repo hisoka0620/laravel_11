@@ -4,6 +4,8 @@
 
 @section('content')
 
+{{-- Display when session expired --}}
+
 @if (session('message'))
 <div x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 3000)"
     class="fixed top-5 right-5 bg-red-500 text-white px-6 py-3 rounded shadow-lg z-50 flex items-center space-x-4">
@@ -11,6 +13,8 @@
     <button @click="show = false" class="text-white hover:text-gray-200 text-xl leading-none">&times;</button>
 </div>
 @endif
+
+{{-- Display when login authentication fails --}}
 
 @if ($errors->any())
 <div class="max-w-sm mx-auto mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">

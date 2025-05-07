@@ -38,6 +38,7 @@
                         class="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="not_started" {{ old('status')==='not_started' ? 'selected' : '' }}>Not Started
                         </option>
+                        <option value="pending" {{ old('status')==='pending' ? 'selected' : '' }}>Pending</option>
                         <option value="in_progress" {{ old('status')==='in_progress' ? 'selected' : '' }}>In Progress
                         </option>
                         <option value="completed" {{ old('status')==='completed' ? 'selected' : '' }}>Completed</option>
@@ -48,6 +49,7 @@
                     <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
                     <select name="priority" id="priority"
                         class="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="none" {{ old('priority')==='none' ? 'selected' : '' }}>None</option>
                         <option value="low" {{ old('priority')==='low' ? 'selected' : '' }}>Low</option>
                         <option value="medium" {{ old('priority')==='medium' ? 'selected' : '' }}>Medium</option>
                         <option value="high" {{ old('priority')==='high' ? 'selected' : '' }}>High</option>
