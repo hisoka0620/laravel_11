@@ -21,19 +21,20 @@
     + Create New Task
 </a>
 
-<div x-data="{ searchText: '', filterStatus: '', filterPriority: '' }" class="mb-6 space-y-2">
+<div x-data="filterComponent(@js($tasks))" x-init="init()" class="mb-6 space-y-2">
     <div class="flex flex-col md:flex-row gap-2 mb-4">
-        <input x-model="searchText" type="text" placeholder="Search tasks..."
+        <input x-model="filterSearch" @input.debounce.500ms="updateQueryParams()" type="text" placeholder="Search tasks..."
             class="w-full border border-gray-300 rounded px-4 py-2">
-        <select x-model="filterStatus" class="border border-gray-300 rounded px-4 py-2 w-full md:w-48">
+        <select x-model="filterStatus" @change="updateQueryParams()" class="border border-gray-300 rounded px-4 py-2 w-full md:w-48">
             <option value="">All Statuses</option>
             <option value="not_started">Not Started</option>
             <option value="completed">Completed</option>
             <option value="in_progress">In Progress</option>
             <option value="pending">Pending</option>
         </select>
-        <select x-model="filterPriority" class="border border-gray-300 rounded px-4 py-2 w-full md:w-48">
+        <select x-model="filterPriority" @change="updateQueryParams()" class="border border-gray-300 rounded px-4 py-2 w-full md:w-48">
             <option value="">All Priorities</option>
+            <option value="none">None</option>
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
@@ -41,65 +42,54 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-        @foreach($tasks as $task)
-        <div x-data="taskCard({
-        id: {{ $task->id }},
-        status: '{{ $task->status }}',
-        previousStatus: '{{ $task->previous_status }}',
-        priority: '{{ $task->priority }}',
-        title: @js($task->title),
-        description: @js($task->description), })" x-show="(title.toLowerCase().includes(searchText.toLowerCase()) || description.toLowerCase().includes(searchText.toLowerCase()))
-        && (!filterStatus || filterStatus === '{{ $task->status }}')
-        && (!filterPriority || filterPriority === '{{ $task->priority }}')"
-            :class="isCompleted ? 'opacity-50 bg-green-50 border-green-400' : ''"
-            class="task-card bg-white rounded-2xl shadow-md p-6 hover:shadow-lg border-l-4 border-blue-400 transition flex flex-col justify-between">
-            <div>
-                <h3 :class="isCompleted ? 'line-through text-xl font-bold text-gray-800 mb-2' : 'text-xl font-bold text-gray-800 mb-2'"
-                    x-text="title"></h3>
-                <p :class="isCompleted ? 'line-through text-gray-600 mb-4' : 'text-gray-600 mb-4'" x-text="description">
-                </p>
-                <div class="flex flex-col text-sm text-gray-500 mb-4 space-y-1">
-                    <span>Status:
-                        <span class="label-status font-semibold capitalize" :class="statusClass"
-                            x-text="statusLabel"></span>
-                    </span>
-                    <span>Priority:
-                        <span
-                            class="font-semibold capitalize {{ $task->priority === 'low' ? 'text-blue-600' : ($task->priority === 'medium' ? 'text-green-500' : ($task->priority === 'high' ? 'text-red-600' : 'text-gray-700')) }}">{{
-                            $task->priority }}</span>
-                    </span>
-                    <span>Due date:
-                        <span>{{ $task->due_date ? $task->due_date->format('F j, Y H:i') : 'No due date' }}</span>
-                    </span>
+        <template x-for="task in filteredTasks" :key="task.id">
+            <div x-data="taskCard(task, @js(csrf_token()))" :class="isCompleted ? 'opacity-50 bg-green-50 border-green-400' : ''"
+                class="task-card bg-white rounded-2xl shadow-md p-6 hover:shadow-lg border-l-4 border-blue-400 transition flex flex-col justify-between">
+                <div>
+                    <h3 :class="isCompleted ? 'line-through text-xl font-bold text-gray-800 mb-2' : 'text-xl font-bold text-gray-800 mb-2'"
+                        x-text="task.title"></h3>
+                    <p :class="isCompleted ? 'line-through text-gray-600 mb-4' : 'text-gray-600 mb-4'"
+                        x-text="task.description">
+                    </p>
+                    <div class="flex flex-col text-sm text-gray-500 mb-4 space-y-1">
+                        <span>Status:
+                            <span class="label-status font-semibold capitalize" :class="statusClass"
+                                x-text="statusLabel"></span>
+                        </span>
+                        <span>Priority:
+                            <span class="font-semibold capitalize" :class="priorityClass" x-text="task.priority"></span>
+                        </span>
+                        <span>Due date:
+                            <span class="font-semibold capitalize" x-text="formattedDueDate"></span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col mb-4">
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" class="form-checkbox h-5 w-5 text-green-600" @change="toggleStatus"
+                            :checked="isCompleted">
+                        <span class="ml-2 text-sm text-gray-700" x-text="toggleLabel">
+                        </span>
+                    </label>
+                </div>
+
+                <div class="flex space-x-2 mt-auto">
+                    <a :href="`/tasks/${id}/edit`"
+                        class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm">
+                        Edit
+                    </a>
+                    <form :action="`/tasks/${id}`" method="POST"
+                        @submit.prevent="if (confirm('Are you sure?')) $el.submit()">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" :value="csrfToken">
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                            Delete
+                        </button>
+                    </form>
                 </div>
             </div>
-
-            <div class="flex flex-col mb-4">
-                <label class="inline-flex items-center">
-                    <input type="checkbox" class="form-checkbox h-5 w-5 text-green-600" @change="toggleStatus"
-                        :checked="isCompleted">
-                    <span class="ml-2 text-sm text-gray-700" x-text="toggleLabel">
-                    </span>
-                </label>
-            </div>
-
-            <div class="flex space-x-2 mt-auto">
-                <a href="{{ route('tasks.edit', $task->id) }}"
-                    class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm">
-                    Edit
-                </a>
-                <form action="{{ route('tasks.destroy', $task->id) }}" method="POST"
-                    onsubmit="return confirm('Are you sure you want to delete this task?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm hover:cursor-pointer">
-                        Delete
-                    </button>
-                </form>
-            </div>
-        </div>
-        @endforeach
+        </template>
     </div>
 </div>
 @endif
