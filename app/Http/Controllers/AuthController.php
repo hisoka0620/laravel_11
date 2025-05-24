@@ -29,7 +29,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('login.form')->with('success', '登録が完了しました!');
+        return redirect()->route('dashboard')->with('success', '登録が完了しました!');
     }
 
     public function showLoginForm()
