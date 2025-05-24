@@ -22,28 +22,42 @@
 </a>
 
 <div x-data="filterComponent(@js($tasks))" x-init="init()" class="mb-6 space-y-2">
-    <div class="flex flex-col md:flex-row gap-2 mb-4">
-        <input x-model="filterSearch" @input.debounce.500ms="updateQueryParams()" type="text" placeholder="Search tasks..."
-            class="w-full border border-gray-300 rounded px-4 py-2">
-        <select x-model="filterStatus" @change="updateQueryParams()" class="border border-gray-300 rounded px-4 py-2 w-full md:w-48">
+    <div class="flex flex-col md:flex-row gap-2 mb-2">
+        <input x-model="filters.search" @input.debounce.500ms="updateQueryParams()" type="text"
+            placeholder="Search tasks..." class="w-full border border-gray-300 rounded px-4 py-2">
+        <select x-model="filters.status" @change="updateQueryParams()"
+            class="border border-gray-300 rounded px-4 py-2 w-full md:w-48">
             <option value="">All Statuses</option>
             <option value="not_started">Not Started</option>
             <option value="completed">Completed</option>
             <option value="in_progress">In Progress</option>
             <option value="pending">Pending</option>
         </select>
-        <select x-model="filterPriority" @change="updateQueryParams()" class="border border-gray-300 rounded px-4 py-2 w-full md:w-48">
+        <select x-model="filters.priority" @change="updateQueryParams()"
+            class="border border-gray-300 rounded px-4 py-2 w-full md:w-48">
             <option value="">All Priorities</option>
             <option value="none">None</option>
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
         </select>
+        <button @click="toggleDueDateSort()"
+            class="flex items-center gap-1 bg-white border border-gray-300 px-3 py-2 rounded hover:bg-gray-100 transition text-sm w-full md:w-80">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path :d="sortByDueDateAsc
+                                    ? 'M5 15l7-7 7 7'  // asc icon
+                                    : 'M19 9l-7 7-7-7'" // desc icon stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2" />
+            </svg>
+            <span x-text="sortByDueDateAsc ? 'Due Soon → Later' : 'Due Later → Soon'"></span>
+        </button>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-        <template x-for="task in filteredTasks" :key="task.id">
-            <div x-data="taskCard(task, @js(csrf_token()))" :class="isCompleted ? 'opacity-50 bg-green-50 border-green-400' : ''"
+        <template x-for="task in filteredAndSortedTasks" :key="task.id">
+            <div x-data="taskCard(task, @js(csrf_token()))"
+                :class="isCompleted ? 'opacity-50 bg-green-50 border-green-400' : ''"
                 class="task-card bg-white rounded-2xl shadow-md p-6 hover:shadow-lg border-l-4 border-blue-400 transition flex flex-col justify-between">
                 <div>
                     <h3 :class="isCompleted ? 'line-through text-xl font-bold text-gray-800 mb-2' : 'text-xl font-bold text-gray-800 mb-2'"
@@ -60,7 +74,8 @@
                             <span class="font-semibold capitalize" :class="priorityClass" x-text="task.priority"></span>
                         </span>
                         <span>Due date:
-                            <span class="font-semibold capitalize" x-text="formattedDueDate"></span>
+                            <span class="font-semibold capitalize" :class="dueDateClass"
+                                x-text="formattedDueDate"></span>
                         </span>
                     </div>
                 </div>

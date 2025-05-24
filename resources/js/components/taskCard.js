@@ -21,11 +21,13 @@ export default (task, csrfToken) => ({
         return this.isCompleted ? "Mark as incomplete" : "Mark as completed";
     },
     get statusClass() {
-        if (this.status === "completed") return "bg-green-100 text-green-700";
+        if (this.status === "completed")
+            return "px-1 bg-green-100 text-green-700";
         if (this.status === "in_progress")
-            return "bg-yellow-100 text-yellow-700";
-        if (this.status === "pending") return "bg-orange-100 text-orange-700";
-        return "bg-gray-100 text-gray-700";
+            return "px-1 bg-yellow-100 text-yellow-700";
+        if (this.status === "pending")
+            return "px-1 bg-orange-100 text-orange-700";
+        return "px-1 bg-gray-100 text-gray-700";
     },
     get priorityClass() {
         if (this.priority === "low") return "text-blue-600";
@@ -33,20 +35,45 @@ export default (task, csrfToken) => ({
         if (this.priority === "high") return "text-red-600";
         return "text-gray-700";
     },
+    get dueDateClass() {
+        const now = new Date();
+        const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        const dueDate = new Date(this.dueDate);
+        if (now > dueDate) {
+            return "text-red-600 bg-gray-100";
+        } else if (dueDate >= now && dueDate < tomorrow) {
+            return "text-yellow-500 bg-gray-100";
+        } else {
+            return "text-slate-600";
+        }
+    },
     get formattedDueDate() {
         if (!this.dueDate) return "No due date";
+        const dueDate = new Date(this.dueDate);
+        if (isNaN(dueDate)) return "Invalid date";
 
-        const date = new Date(this.dueDate.replace(" ", "T"));
-        if (isNaN(date)) return "Invalid date";
+        const yyyy = dueDate.getFullYear();
+        const mm = String(dueDate.getMonth() + 1).padStart(2, "0");
+        const dd = String(dueDate.getDate()).padStart(2, "0");
+        const weekDay = String(
+            new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(
+                dueDate
+            )
+        );
+        const hh = String(dueDate.getHours()).padStart(2, "0");
+        const mi = String(dueDate.getMinutes()).padStart(2, "0");
+        const formattedDateTime = `${yyyy}-${mm}-${dd} ${weekDay} ${hh}:${mi}`;
 
-        const yyyy = date.getFullYear();
-        const mm = String(date.getMonth() + 1).padStart(2, '0');
-        const dd = String(date.getDay()).padStart(2, '0');
-        const hh = String(date.getHours()).padStart(2, '0');
-        const mi = String(date.getMinutes()).padStart(2, '0');
+        const now = new Date();
+        const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-        return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
-
+        if (now <= dueDate && tomorrow > dueDate) {
+            return `🔔 ${formattedDateTime}`;
+        } else if (dueDate < now) {
+            return `⚠️ ${formattedDateTime}`;
+        } else {
+            return formattedDateTime;
+        }
     },
     toggleStatus() {
         fetch(`/tasks/${this.id}/toggle-status`, {
