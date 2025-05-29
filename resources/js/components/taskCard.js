@@ -26,7 +26,7 @@ export default (task, csrfToken) => ({
         if (this.status === "in_progress")
             return "px-1 bg-yellow-100 text-yellow-700";
         if (this.status === "pending")
-            return "px-1 bg-orange-100 text-orange-700";
+            return "px-1 bg-orange-100 text-orange-600";
         return "px-1 bg-gray-100 text-gray-700";
     },
     get priorityClass() {
@@ -46,6 +46,12 @@ export default (task, csrfToken) => ({
         } else {
             return "text-slate-600";
         }
+    },
+    get isTasksDueSoon() {
+        const now = new Date();
+        const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        const dueDate = new Date(this.dueDate);
+        return dueDate >= now && dueDate < tomorrow;
     },
     get formattedDueDate() {
         if (!this.dueDate) return "No due date";
@@ -68,9 +74,9 @@ export default (task, csrfToken) => ({
         const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
         if (now <= dueDate && tomorrow > dueDate) {
-            return `🔔 ${formattedDateTime}`;
+            return `${formattedDateTime}`;
         } else if (dueDate < now) {
-            return `⚠️ ${formattedDateTime}`;
+            return `${formattedDateTime}`;
         } else {
             return formattedDateTime;
         }
