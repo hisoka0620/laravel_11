@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Task;
 use Carbon\Carbon;
 
@@ -10,15 +9,18 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $userId = auth()->id();
         $now = Carbon::now();
-        $tomorrow = Carbon::now()->addDay();
+        $tomorrow = $now->copy()->addDay();
 
-        $tasks = Task::where('user_id', auth()->id())->where('due_date', '>=', $now)->orderBy('due_date', 'asc')->get();
+        $baseQuery = Task::where('user_id', $userId)->where('due_date', '>=', $now);
 
-        $unfinishedCount = Task::where('user_id', auth()->id())->where('status', '!=', 'completed')->where('due_date', '>=', $now)->count();
+        $tasks = $baseQuery->clone()->orderBy('due_date', 'asc')->get();
 
-        $urgentTasksCount = Task::where('user_id', auth()->id())->where('due_date', '>=', $now)->where('due_date', '<=', $tomorrow)->where('status', '!=', 'completed')->count();
+        $unfinishedCount = $baseQuery->clone()->where('status', '!=', 'completed')->count();
 
-        return view('auth.dashboard', compact('tasks', 'unfinishedCount', 'urgentTasksCount', 'now', 'tomorrow'));
+        $urgentTasksCount = $baseQuery->clone()->where('due_date', '<=', $tomorrow)->where('status', '!=', 'completed')->count();
+
+        return view('auth.dashboard', compact('tasks', 'unfinishedCount', 'urgentTasksCount'));
     }
 }

@@ -7,7 +7,14 @@ export default (task, csrfToken) => ({
     priority: task.priority,
     dueDate: task.due_date,
     csrfToken,
+    showUrgent: false,
 
+    init() {
+        const dueDate = new Date(this.dueDate);
+        const now = new Date();
+        const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        this.showUrgent = dueDate >= now && dueDate < tomorrow;
+    },
     get isCompleted() {
         return this.status === "completed";
     },
@@ -21,28 +28,29 @@ export default (task, csrfToken) => ({
         return this.isCompleted ? "Mark as incomplete" : "Mark as completed";
     },
     get statusClass() {
-        if (this.status === "completed")
-            return "px-1 bg-green-100 text-green-700";
-        if (this.status === "in_progress")
-            return "px-1 bg-yellow-100 text-yellow-700";
-        if (this.status === "pending")
-            return "px-1 bg-orange-100 text-orange-600";
-        return "px-1 bg-gray-100 text-gray-700";
+        switch (this.status) {
+            case "completed": return "bg-green-100 text-green-600";
+            case "in_progress": return "bg-yellow-100 text-yellow-600";
+            case "pending": return "bg-orange-100 text-orange-600";
+            default: return "bg-gray-100 text-gray-600";
+        }
     },
     get priorityClass() {
-        if (this.priority === "low") return "text-blue-600";
-        if (this.priority === "medium") return "text-green-500";
-        if (this.priority === "high") return "text-red-600";
-        return "text-gray-700";
+        switch (this.priority) {
+            case "low": return "border-green-500 bg-green-100 text-green-600";
+            case "medium": return "border-blue-500 bg-blue-100 text-blue-600";
+            case "high": return "border-red-500 bg-red-100 text-red-600";
+            default: return "border-gray-500 bg-gray-100 text-gray-600";
+        }
     },
     get dueDateClass() {
         const now = new Date();
         const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
         const dueDate = new Date(this.dueDate);
         if (now > dueDate) {
-            return "text-red-600 bg-gray-100";
+            return "text-red-600 bg-red-100";
         } else if (dueDate >= now && dueDate < tomorrow) {
-            return "text-yellow-500 bg-gray-100";
+            return "text-yellow-600 bg-yellow-100";
         } else {
             return "text-slate-600";
         }

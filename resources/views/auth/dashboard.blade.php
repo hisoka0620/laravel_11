@@ -9,7 +9,7 @@
     <div x-show="show" x-transition.duration.500ms
         class="fixed bottom-6 right-6 bg-red-100 border border-red-300 text-red-800 px-6 py-4 rounded-xl shadow-lg flex flex-row">
         <p x-show="urgentCount === 1">There is a task that is due soon</p>
-        <p x-show="urgentCount !== 1">⏰ There are <strong x-text="urgentCount"></strong> tasks that are due soon</p>
+        <p x-show="urgentCount > 1">⏰ There are <strong x-text="urgentCount"></strong> tasks that are due soon</p>
         <button @click="show = false" class="ml-4 text-sm text-red-600 underline">close</button>
     </div>
 </div>
@@ -81,13 +81,16 @@
 @else
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
     @foreach($tasks as $task)
-    @if($task->status !== 'completed' && $task->due_date >= Carbon\Carbon::now())
-    <div x-data="taskCard(@js($task))"
-        class="taskCard bg-white rounded-2xl shadow-md p-6 hover:shadow-lg border-l-4 border-blue-400 transition flex flex-col justify-between {{ $task->due_date >= $now && $task->due_date <= $tomorrow ? 'border-red-500' : '' }}">
+    @if($task->status !== 'completed' && $task->due_date >= now())
+    <div x-data="taskCard(@js($task))" x-init="init()"
+        class="taskCard bg-white rounded-2xl shadow-md p-6 hover:shadow-lg border-l-4 border-blue-400 transition flex flex-col justify-between"
+        :class="showUrgent ? 'border-red-500' : 'border-blue-400'">
         <div>
-            <div x-show="isTasksDueSoon" class="border-l-4 border-red-500 bg-red-50 p-2 mb-2 rounded">
-                <h3 class="text-red-700 font-bold animate-pulse">🔥 Tasks due soon</h3>
-            </div>
+            <template x-if="showUrgent">
+                <div class="border-l-4 border-red-500 bg-red-50 p-2 mb-2 rounded">
+                    <h3 class="text-red-700 font-bold animate-pulse">🔥 Tasks due soon</h3>
+                </div>
+            </template>
             <h3 class="text-xl font-bold text-gray-800 mb-2">{{
                 $task->title }}</h3>
             <p class="text-gray-600 mb-4">{{ $task->description
@@ -95,21 +98,17 @@
 
             <div class="flex flex-col text-sm text-gray-500 mb-4 space-y-1">
                 <span>Status:
-                    <span class="p-1 rounded text-sm font-semibold bg-blue-100 text-blue-800 capitalize {{
-                        $task->status === 'in_progress' ? 'bg-yellow-100  text-yellow-600' : ($task->status === 'pending' ? 'bg-orange-100 text-orange-500' : 'bg-gray-100 text-gray-700')
-                    }}">
-                        {{ ucfirst(str_replace('_', ' ', $task->status)) }}
+                    <span class="px-1 rounded text-sm font-semibold bg-blue-100 text-blue-800 capitalize"
+                        :class="statusClass" x-text="statusLabel">
                     </span>
                 </span>
                 <span>Priority:
-                    <span
-                        class="font-semibold capitalize border-l-4 px-2 {{ $task->priority === 'low' ? 'border-green-500 bg-green-100 text-green-700' : ($task->priority === 'medium' ? 'border-blue-500 bg-blue-100 text-blue-700' : ($task->priority === 'high' ? 'border-red-500 bg-red-100 text-red-700' : 'border-gray-300 bg-gray-100')) }}">{{
+                    <span class="font-semibold capitalize border-l-4 px-1 rounded text-sm" :class="priorityClass">{{
                         $task->priority }}</span>
                 </span>
                 <span>Due date:
-                    <span
-                        class="font-semibold capitalize p-1 rounded text-sm {{ $task->due_date >= $now && $task->due_date <= $tomorrow ? 'text-yellow-600 bg-yellow-100' : '' }}">{{
-                        $task->due_date ? $task->due_date->format('Y-m-d D H:i') : 'No due date' }}</span>
+                    <span class="font-semibold capitalize px-1 rounded text-sm" :class="dueDateClass"
+                        x-text="formattedDueDate"></span>
                 </span>
             </div>
         </div>

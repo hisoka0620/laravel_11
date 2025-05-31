@@ -22,7 +22,7 @@
 </a>
 
 <div x-data="filterComponent(@js($tasks))" x-init="init()" class="mb-6 space-y-2">
-    <div class="flex flex-col md:flex-row gap-2 mb-2">
+    <div class="flex flex-col md:flex-row gap-2 mb-4">
         <input x-model="filters.search" @input.debounce.500ms="updateQueryParams()" type="text"
             placeholder="Search tasks..." class="w-full border border-gray-300 rounded px-4 py-2">
         <select x-model="filters.status" @change="updateQueryParams()"
@@ -67,14 +67,15 @@
                     </p>
                     <div class="flex flex-col text-sm text-gray-500 mb-4 space-y-1">
                         <span>Status:
-                            <span class="label-status font-semibold capitalize" :class="statusClass"
+                            <span class="label-status font-semibold capitalize px-1 rounded" :class="statusClass"
                                 x-text="statusLabel"></span>
                         </span>
                         <span>Priority:
-                            <span class="font-semibold capitalize" :class="priorityClass" x-text="task.priority"></span>
+                            <span class="font-semibold capitalize px-1 rounded" :class="priorityClass"
+                                x-text="task.priority"></span>
                         </span>
                         <span>Due date:
-                            <span class="font-semibold capitalize" :class="dueDateClass"
+                            <span class="font-semibold capitalize px-1 rounded" :class="dueDateClass"
                                 x-text="formattedDueDate"></span>
                         </span>
                     </div>
