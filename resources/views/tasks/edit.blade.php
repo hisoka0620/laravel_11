@@ -32,28 +32,36 @@
                 class="w-full border border-gray-300 px-3 py-2 rounded">{{ old('description', $task->description) }}</textarea>
         </div>
 
-        <div>
-            <label for="status" class="block font-medium">Status</label>
-            <select name="status" id="status" class="w-full border border-gray-300 px-3 py-2 rounded">
-                <option value="not_started" {{ old('status', $task->status) === 'not_started' ? 'selected' : '' }}>Not
-                    Started</option>
-                <option value="pending" {{ old('status', $task->status) === 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="in_progress" {{ old('status', $task->status) === 'in_progress' ? 'selected' : '' }}>In
-                    Progress</option>
-                <option value="completed" {{ old('status', $task->status) === 'completed' ? 'selected' : '' }}>Completed
-                </option>
-            </select>
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="status" class="block font-medium">Status</label>
+                <select name="status" id="status" class="w-full border border-gray-300 px-3 py-2 rounded">
+                    <option value="not_started" {{ old('status', $task->status) === 'not_started' ? 'selected' : ''
+                        }}>Not
+                        Started</option>
+                    <option value="pending" {{ old('status', $task->status) === 'pending' ? 'selected' : '' }}>Pending
+                    </option>
+                    <option value="in_progress" {{ old('status', $task->status) === 'in_progress' ? 'selected' : ''
+                        }}>In
+                        Progress</option>
+                    <option value="completed" {{ old('status', $task->status) === 'completed' ? 'selected' : ''
+                        }}>Completed
+                    </option>
+                </select>
+            </div>
 
-        <div>
-            <label for="priority" class="block font-medium">Priority</label>
-            <select name="priority" id="priority" class="w-full border border-gray-300 px-3 py-2 rounded">
-                <option value="none" {{ old('priority', $task->priority) === 'none' ? 'selected' : '' }}>None</option>
-                <option value="low" {{ old('priority', $task->priority) === 'low' ? 'selected' : '' }}>Low</option>
-                <option value="medium" {{ old('priority', $task->priority) === 'medium' ? 'selected' : '' }}>Medium
-                </option>
-                <option value="high" {{ old('priority', $task->priority) === 'high' ? 'selected' : '' }}>High</option>
-            </select>
+            <div>
+                <label for="priority" class="block font-medium">Priority</label>
+                <select name="priority" id="priority" class="w-full border border-gray-300 px-3 py-2 rounded">
+                    <option value="none" {{ old('priority', $task->priority) === 'none' ? 'selected' : '' }}>None
+                    </option>
+                    <option value="low" {{ old('priority', $task->priority) === 'low' ? 'selected' : '' }}>Low</option>
+                    <option value="medium" {{ old('priority', $task->priority) === 'medium' ? 'selected' : '' }}>Medium
+                    </option>
+                    <option value="high" {{ old('priority', $task->priority) === 'high' ? 'selected' : '' }}>High
+                    </option>
+                </select>
+            </div>
         </div>
 
         <div>
@@ -63,15 +71,15 @@
                 class="w-full border border-gray-300 px-3 py-2 rounded">
         </div>
 
-        <div class="flex justify-end space-x-4">
-            <a href="{{ url()->previous() }}"
-                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-6 py-2 rounded-lg transition duration-150">
-                Cancel
-            </a>
+        <div class="flex flex-col md:flex-row md:justify-end space-x-4">
             <button type="submit"
-                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 hover:cursor-pointer">
+                class="w-full bg-blue-600 text-white px-4 py-2 mb-2 md:mb-0 rounded-lg transition hover:bg-blue-700 hover:cursor-pointer">
                 Update
             </button>
+            <a href="{{ route('tasks.index') }}"
+                class="md:inline-block text-center w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-6 py-2 rounded-lg transition duration-150">
+                Cancel
+            </a>
         </div>
     </form>
 </div>

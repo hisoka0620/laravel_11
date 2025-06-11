@@ -68,11 +68,11 @@
 
             <div class="flex flex-col md:flex-row md:justify-end space-x-4">
                 <button type="submit"
-                    class="w-full md:w-32 max-md:mb-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition duration-150 hover:cursor-pointer">
-                    Create
+                    class="w-full bg-blue-600 text-white px-4 py-2 mb-2 md:mb-0 rounded-lg transition hover:bg-blue-700 hover:cursor-pointer">
+                    Update
                 </button>
                 <a href="{{ route('tasks.index') }}"
-                    class="w-full md:w-32 bg-gray-300 hover:bg-gray-400 text-gray-800 block text-center font-semibold px-6 py-2 rounded-lg transition duration-150">
+                    class="md:inline-block text-center w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-6 py-2 rounded-lg transition duration-150">
                     Cancel
                 </a>
             </div>
