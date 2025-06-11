@@ -13,14 +13,22 @@ class DashboardController extends Controller
         $now = Carbon::now();
         $tomorrow = $now->copy()->addDay();
 
-        $baseQuery = Task::where('user_id', $userId)->where('due_date', '>=', $now);
+        $baseQuery = Task::where('user_id', $userId);
 
         $tasks = $baseQuery->clone()->orderBy('due_date', 'asc')->get();
 
-        $unfinishedCount = $baseQuery->clone()->where('status', '!=', 'completed')->count();
+        $ongoingTasks = $baseQuery->clone()->where(function ($query) use ($now) {
+            $query->where('due_date', '>=', $now)->orWhereNull('due_date');
+        });
 
-        $urgentTasksCount = $baseQuery->clone()->where('due_date', '<=', $tomorrow)->where('status', '!=', 'completed')->count();
+        $completedCount = $baseQuery->clone()->where('status', '=', 'completed')->count();
 
-        return view('auth.dashboard', compact('tasks', 'unfinishedCount', 'urgentTasksCount'));
+        $expiredCount = $baseQuery->clone()->where('due_date', '<', $now)->where('status', '!=', 'completed')->count();
+
+        $unfinishedCount = $ongoingTasks->clone()->where('status', '!=', 'completed')->count();
+
+        $urgentTasksCount = $ongoingTasks->clone()->where('due_date', '<', $tomorrow)->where('status', '!=', 'completed')->count();
+
+        return view('auth.dashboard', compact('tasks', 'unfinishedCount', 'urgentTasksCount', 'expiredCount', 'completedCount', 'now'));
     }
 }
