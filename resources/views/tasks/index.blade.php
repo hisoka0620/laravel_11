@@ -11,10 +11,11 @@
     <p class="font-medium">You have no tasks yet.</p>
     <p class="text-sm mt-2">Start by creating your first task!</p>
 </div>
-<a href="{{ route('tasks.create') }}"
-    class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
-    + Create New Task
-</a>
+<div class="flex justify-end sm:justify-start">
+    <a href="{{ route('tasks.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+        + Create New Task</a>
+</div>
+
 @else
 <a href="{{ route('tasks.create') }}"
     class="inline-block bg-blue-500 text-white px-4 py-2 mb-2 rounded hover:bg-blue-600 transition">
@@ -32,8 +33,8 @@
                 placeholder="Search tasks..." class="w-full border border-gray-300 rounded px-4 py-2">
             <!-- filter icon -->
             <button @click="showFilters = !showFilters" class="p-2 border border-gray-300 rounded hover:bg-gray-100">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                    class="size-6">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                 </svg>
@@ -72,37 +73,41 @@
         </div>
 
         <!-- md or higher: Normal search + filter -->
-        <div class="hidden md:flex md:flex-nowrap gap-3 mb-4">
+        <div class="hidden md:flex md:flex-col gap-y-2 mb-4">
             <input x-model="filters.search" @input.debounce.500ms="updateQueryParams()" type="text"
                 placeholder="Search tasks..." class="flex-1 min-w-[200px] border border-gray-300 rounded px-4 py-2">
 
-            <select x-model="filters.status" @change="updateQueryParams()"
-                class="min-w-[36px] border border-gray-300 rounded px-4 py-2">
-                <option value="">All Statuses</option>
-                <option value="not_started">Not Started</option>
-                <option value="completed">Completed</option>
-                <option value="in_progress">In Progress</option>
-                <option value="pending">Pending</option>
-            </select>
+            <div class="flex flex-row gap-x-2">
+                <select x-model="filters.status" @change="updateQueryParams()"
+                    class="min-w-[36px] border border-gray-300 rounded px-4 py-2">
+                    <option value="">All Statuses</option>
+                    <option value="not_started">Not Started</option>
+                    <option value="completed">Completed</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="pending">Pending</option>
+                </select>
 
-            <select x-model="filters.priority" @change="updateQueryParams()"
-                class="min-w-[36px] border border-gray-300 rounded px-4 py-2">
-                <option value="">All Priorities</option>
-                <option value="none">None</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-            </select>
+                <select x-model="filters.priority" @change="updateQueryParams()"
+                    class="min-w-[36px] border border-gray-300 rounded px-4 py-2">
+                    <option value="">All Priorities</option>
+                    <option value="none">None</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
 
-            <button @click="toggleDueDateSort()"
-                class="min-w-[48px] flex items-center gap-2 bg-white border border-gray-300 px-4 py-2 rounded hover:bg-gray-100 text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path :d="sortByDueDateAsc ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'" stroke-linecap="round"
-                        stroke-linejoin="round" stroke-width="2" />
-                </svg>
-                <span x-text="sortByDueDateAsc ? 'Due Soon → Later' : 'Due Later → Soon'"></span>
-            </button>
+                <button @click="toggleDueDateSort()"
+                    class="min-w-[48px] flex items-center gap-2 bg-white border border-gray-300 px-4 py-2 rounded hover:bg-gray-100 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path :d="sortByDueDateAsc ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'" stroke-linecap="round"
+                            stroke-linejoin="round" stroke-width="2" />
+                    </svg>
+                    <span x-text="sortByDueDateAsc ? 'Due Soon → Later' : 'Due Later → Soon'"></span>
+                </button>
+            </div>
+
+
         </div>
     </div>
 
@@ -110,7 +115,8 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         <template x-for="task in filteredAndSortedTasks" :key="task.id">
             <div x-data="taskCard(task, @js(csrf_token()))"
-                class="task-card bg-white rounded-2xl shadow-md p-6 hover:shadow-lg border-l-4 transition flex flex-col justify-between" :class="borderClass">
+                class="task-card rounded-2xl shadow-md p-6 hover:shadow-lg border-l-4 transition flex flex-col justify-between"
+                :class="taskCardClass">
                 <div>
                     <h3 :class="isCompleted ? 'line-through text-xl font-bold text-gray-800 mb-2' : 'text-xl font-bold text-gray-800 mb-2'"
                         x-text="task.title"></h3>
