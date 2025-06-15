@@ -11,7 +11,7 @@
         <h2 class="text-2xl font-semibold text-center text-gray-800">Sign In</h2>
 
         {{-- Email --}}
-        <div x-data="{ value: @js(old('email')) }">
+        <div x-cloak x-data="{ value: @js(old('email')) }">
             <label for="email" class="block mb-1 text-sm font-medium text-gray-700">Email</label>
             <div class="relative">
                 <input type="email" name="email" id="email" x-model="value" :value="value" placeholder="you@example.com"
@@ -28,7 +28,7 @@
         </div>
 
         {{-- Password --}}
-        <div x-data="{ password: '' }">
+        <div x-cloak x-data="{ password: '' }">
             <label for="password" class="block mb-1 text-sm font-medium text-gray-700">Password</label>
             <div class="relative">
                 <input type="password" name="password" id="password" placeholder="••••••••" x-model="password"
@@ -44,11 +44,19 @@
             @enderror
         </div>
 
-        {{-- Remember me --}}
-        <div class="flex items-center space-x-2">
-            <input type="checkbox" name="remember" id="remember" class="accent-blue-600 h-4 w-4">
-            <label for="remember" class="text-sm text-gray-700">Remember Me</label>
+        <div class="flex justify-between">
+            {{-- Remember me --}}
+            <div class="flex items-center space-x-2">
+                <input type="checkbox" name="remember" id="remember" class="accent-blue-600 h-4 w-4">
+                <label for="remember" class="text-sm text-gray-700">Remember Me</label>
+            </div>
+
+            {{-- forgot password --}}
+            <div>
+                <a href="{{ route('password.request') }}" class="text-sm hover:text-red-500 transition">Forgot your password?</a>
+            </div>
         </div>
+
 
         {{-- Submit --}}
         <div>
