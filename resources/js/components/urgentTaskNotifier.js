@@ -1,7 +1,7 @@
 export default (tasks) => ({
     show: false,
     urgentCount: 0,
-    tasks, 
+    tasks,
 
     init() {
         const now = new Date();
@@ -9,7 +9,7 @@ export default (tasks) => ({
 
         const urgentTasks = this.tasks.filter((task) => {
             const due = new Date(task.due_date);
-            const notCompleted = task.status !== 'completed'
+            const notCompleted = task.status !== "completed";
             return due >= now && due < tomorrow && notCompleted;
         });
         if (urgentTasks.length > 0) {
@@ -17,5 +17,4 @@ export default (tasks) => ({
             this.show = true;
         }
     },
-
 });

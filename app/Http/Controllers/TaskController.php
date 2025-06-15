@@ -79,10 +79,10 @@ class TaskController extends Controller
     public function toggleStatusAjax(Task $task)
     {
 
-        if($task->status === 'completed'){
+        if ($task->status === 'completed') {
             $task->status = $task->previous_status ?? 'pending';
             $task->previous_status = null;
-        }else{
+        } else {
             $task->previous_status = $task->status;
             $task->status = 'completed';
         }

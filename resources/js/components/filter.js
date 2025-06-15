@@ -12,7 +12,7 @@ export default (tasks) => ({
     init() {
         const params = new URLSearchParams(window.location.search);
 
-        const searchParams = params.get('search');
+        const searchParams = params.get("search");
         this.filters.search = searchParams || "";
 
         const statusParams = params.get("status");
@@ -21,8 +21,9 @@ export default (tasks) => ({
         const priorityParams = params.get("priority");
         this.filters.priority = priorityParams || "";
 
-        const sortParams = params.get('sort');
-        this.sortEnabled = sortParams === "due_date_asc" || sortParams === "due_date_desc";
+        const sortParams = params.get("sort");
+        this.sortEnabled =
+            sortParams === "due_date_asc" || sortParams === "due_date_desc";
         this.sortByDueDateAsc = sortParams !== "due_date_desc";
     },
 
@@ -37,7 +38,10 @@ export default (tasks) => ({
         }
 
         if (this.sortEnabled) {
-            params.set("sort", this.sortByDueDateAsc ? "due_date_asc" : "due_date_desc");
+            params.set(
+                "sort",
+                this.sortByDueDateAsc ? "due_date_asc" : "due_date_desc"
+            );
         } else {
             params.delete("sort");
         }
