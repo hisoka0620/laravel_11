@@ -1,11 +1,7 @@
-import "./bootstrap";
-import taskCard from "./components/taskCard";
-import filterComponent from "./components/filter";
-import urgentTaskNotifier from "./components/urgentTaskNotifier";
-import Alpine from "alpinejs";
+import './bootstrap';
 
-Alpine.data("taskCard", taskCard);
-Alpine.data("filterComponent", filterComponent);
-Alpine.data("urgentTaskNotifier", urgentTaskNotifier);
+import Alpine from 'alpinejs';
+
 window.Alpine = Alpine;
+
 Alpine.start();
