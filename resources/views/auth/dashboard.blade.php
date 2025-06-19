@@ -13,21 +13,20 @@
 
 <div class="mb-6">
     @if($tasks->isNotEmpty() && $completedCount > 0 && $unfinishedCount == 0 && $expiredCount == 0 && $urgentTasksCount
-    ==
-    0)
-    <x-banner.task-complete />
+    == 0)
+    <x-banners.completed-banner />
     @endif
 
     @if($unfinishedCount > 0)
-    <x-banner.unfinished-task :unfinishedCount="$unfinishedCount"/>
+    <x-banners.unfinished-banner :unfinishedCount="$unfinishedCount" />
     @endif
 
     @if($expiredCount > 0)
-    <x-banner.expired-task :expiredCount="$expiredCount"/>
+    <x-banners.expired-banner :expiredCount="$expiredCount" />
     @endif
 
     @if($urgentTasksCount > 0)
-    <x-banner.urgent-task :urgentTasksCount="$urgentTasksCount"/>
+    <x-banners.urgent-banner :urgentTasksCount="$urgentTasksCount" />
     @endif
 </div>
 
