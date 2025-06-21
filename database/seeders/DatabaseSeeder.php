@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory()
             ->count(10)
-            ->has(Task::factory()->count(5))
+            ->has(Task::factory()->count(10))
             ->create();
     }
 }
