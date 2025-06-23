@@ -7,9 +7,11 @@ export default (tasks) => ({
     },
     tasks: tasks,
     sortByDueDateAsc: true,
-    sortEnabled: false, //　sort On/Off
+    sortEnabled: false,
 
     init() {
+        this.$store.taskStore.tasks = this.tasks;
+
         const params = new URLSearchParams(window.location.search);
 
         const searchParams = params.get("search");
@@ -51,7 +53,7 @@ export default (tasks) => ({
     },
 
     get filteredAndSortedTasks() {
-        const filteredTasks = this.tasks.filter((task) => {
+        const filteredTasks = this.$store.taskStore.tasks.filter((task) => {
             const matchesText =
                 this.filters.search === "" ||
                 task.title
@@ -72,11 +74,19 @@ export default (tasks) => ({
 
         if (this.sortEnabled) {
             const now = new Date();
-            const pastTasks = filteredTasks.filter((task) => {
-                const dueDate = new Date(task.due_date);
-                return dueDate <= now;
+            const uncompletedTasks = filteredTasks.filter((task) => {
+                return task.status !== "completed";
             });
-            const futureTasks = filteredTasks.filter((task) => {
+            const noDueDateTasks = uncompletedTasks.filter((task) => {
+                return task.due_date === null;
+            });
+            const pastTasks = uncompletedTasks.filter((task) => {
+                if (!task.due_date) return false;
+                const dueDate = new Date(task.due_date);
+                return dueDate < now;
+            });
+            const futureTasks = uncompletedTasks.filter((task) => {
+                if (!task.due_date) return false;
                 const dueDate = new Date(task.due_date);
                 return dueDate > now;
             });
@@ -88,14 +98,21 @@ export default (tasks) => ({
 
                 return this.sortByDueDateAsc ? diffA - diffB : diffB - diffA; // asc : desc
             });
-            return [...sortedTasks, ...pastTasks];
+            const completedTasks = filteredTasks.filter((task) => {
+                return task.status === "completed";
+            });
+            return [
+                ...sortedTasks,
+                ...noDueDateTasks,
+                ...pastTasks,
+                ...completedTasks,
+            ];
         }
         return filteredTasks;
     },
     toggleDueDateSort() {
         if (!this.sortEnabled) {
             this.sortEnabled = true;
-            this.sortByDueDateAsc = true;
         } else {
             this.sortByDueDateAsc = !this.sortByDueDateAsc;
         }

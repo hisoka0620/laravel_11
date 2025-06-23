@@ -132,6 +132,7 @@ export default (task, csrfToken) => ({
             .then((data) => {
                 this.status = data.status;
                 this.previousStatus = data.previous_status ?? null;
+                this.$store.taskStore.updateTaskStatus(this.id, data.status, data.previous_status);
             })
             .catch((err) => {
                 alert("Failed to update task status");
