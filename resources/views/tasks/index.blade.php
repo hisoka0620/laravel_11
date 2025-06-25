@@ -49,7 +49,9 @@
     <!-- 🔹 Grid layout support -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         <template x-for="task in filteredAndSortedTasks" :key="task.id">
-            @include('components.task-card')
+            <div class="h-full">
+                @include('components.task-card')
+            </div>
         </template>
     </div>
 </div>
