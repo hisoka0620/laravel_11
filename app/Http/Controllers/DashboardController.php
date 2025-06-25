@@ -14,9 +14,9 @@ class DashboardController extends Controller
 
         $baseQuery = Task::where('user_id', $userId);
 
-        $tasks = $baseQuery->clone()->orderBy('due_date', 'asc')->get();
+        $tasks = $baseQuery->clone()->get();
 
-        $ongoingTasks = $baseQuery->clone()->ongoingTasks()->get();
+        $ongoingTasks = $baseQuery->clone()->ongoingTasks()->orderByRaw('ISNULL(due_date), due_date ASC')->get();
 
         $completedCount = $baseQuery->clone()->where('status', '=', 'completed')->count();
 
