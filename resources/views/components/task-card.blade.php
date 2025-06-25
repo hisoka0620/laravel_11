@@ -2,9 +2,9 @@
     class="task-card rounded-2xl shadow-md p-6 hover:shadow-2xl border-l-4 transition h-full flex flex-col justify-between"
     :class="taskCardClass">
     <div class="flex flex-col justify-between h-full">
-        <h3 class="text-xl font-bold text-gray-800 mb-2 whitespace-nowrap overflow-x-auto overflow-y-hidden max-w-full block break-words" :class="isCompleted ? 'line-through' : ''"
-            x-text="task.title"></h3>
-        <p class="text-gray-600 mb-4 break-words overflow-auto max-h-32" :class="isCompleted ? 'line-through' : ''"
+        <h3 class="text-xl font-bold text-gray-800 mb-2 whitespace-nowrap overflow-x-auto overflow-y-hidden max-w-full block break-words"
+            :class="isCompleted ? 'line-through' : ''" x-text="task.title"></h3>
+        <p class="text-gray-600 mb-4 break-words overflow-auto max-h-24" :class="isCompleted ? 'line-through' : ''"
             x-text="task.description">
         </p>
         <div class="mt-auto">
