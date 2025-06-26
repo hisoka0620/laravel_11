@@ -7,64 +7,53 @@
 <h1 class="text-3xl font-semibold mb-6">📝 Your To-Do List</h1>
 
 @if($tasks->isEmpty())
-<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded mb-4">
-    <p class="font-medium">You have no tasks yet.</p>
-    <p class="text-sm mt-2">Start by creating your first task!</p>
-</div>
-<a href="{{ route('tasks.create') }}"
-    class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
-    + Create New Task
-</a>
+<x-banners.empty-banner />
+<x-create-task-button>+ Create New Task</x-create-task-button>
 @else
-<a href="{{ route('tasks.create') }}"
-    class="inline-block bg-blue-500 text-white px-4 py-2 mb-6 ml-1 rounded hover:bg-blue-600 transition">
-    + Create New Task
-</a>
+<x-create-task-button>+ Create New Task</x-create-task-button>
+<div x-data="filterComponent(@js($tasks))" x-init="init()" class="mb-6 space-y-2">
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-    @foreach($tasks as $task)
-    <div
-        class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg border-l-4 border-blue-400 transition flex flex-col justify-between">
-        <div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $task->title }}</h3>
-            <p class="text-gray-600 mb-4">{{ $task->description }}</p>
+    <div x-data="{ showFilters: false }" class="container mx-auto max-w-screen-lg">
+        <!-- mobile: search + filter icon -->
+        <div class="flex md:hidden gap-2 mb-2">
+            <!-- search form（always display） -->
+            <x-search-options.search />
+            <!-- filter icon -->
+            <button @click="showFilters = !showFilters" class="p-2 border border-gray-300 rounded hover:bg-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                </svg>
+            </button>
+        </div>
 
-            <div class="flex flex-col text-sm text-gray-500 mb-4 space-y-1">
-                <span>Status:
-                    <span class="font-semibold capitalize {{
-                        $task->status === 'completed' ? 'text-blue-600' :
-                        ($task->status === 'in_progress' ? 'text-yellow-600' : 'text-gray-400')
-                    }}">
-                        {{ str_replace('_', ' ', $task->status) }}
-                    </span>
-                </span>
-                <span>Priority:
-                    <span
-                        class="font-semibold capitalize {{ $task->priority === 'low' ? 'text-blue-600' : ($task->priority === 'medium' ? 'text-green-500' : 'text-red-600') }}">{{
-                        $task->priority }}</span>
-                </span>
-                <span>Due date:
-                    <span>{{ $task->due_date ? $task->due_date->format('F j, Y H:i') : 'No due date' }}</span>
-                </span>
+        <!-- mobile: Filter item (open/close) -->
+        <div x-show="showFilters" x-transition class="flex flex-col gap-2 mb-4 md:hidden">
+            <x-search-options.status-filter />
+            <x-search-options.priority-filter />
+            <x-search-options.sort-button />
+        </div>
+
+        <!-- md or higher: Normal search + filter -->
+        <div class="hidden md:flex md:flex-col gap-y-2 mb-4">
+            <x-search-options.search />
+            <div class="flex flex-row gap-x-2">
+                <x-search-options.status-filter />
+                <x-search-options.priority-filter />
+                <x-search-options.sort-button />
             </div>
         </div>
-
-        <div class="flex space-x-2 mt-auto">
-            <a href="{{ route('tasks.edit', $task->id) }}"
-                class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm">
-                Edit
-            </a>
-            <form action="{{ route('tasks.destroy', $task->id) }}" method="POST"
-                onsubmit="return confirm('Are you sure you want to delete this task?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
-                    Delete
-                </button>
-            </form>
-        </div>
     </div>
-    @endforeach
+
+    <!-- 🔹 Grid layout support -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <template x-for="task in filteredAndSortedTasks" :key="task.id">
+            <div class="h-full">
+                @include('components.task-card')
+            </div>
+        </template>
+    </div>
 </div>
 @endif
 @endsection

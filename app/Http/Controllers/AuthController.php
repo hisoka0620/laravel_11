@@ -29,7 +29,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('login.form')->with('success', '登録が完了しました!');
+        return redirect()->route('dashboard')->with('success', 'Your registration is complete!');
     }
 
     public function showLoginForm()
@@ -44,17 +44,23 @@ class AuthController extends Controller
             'password' => ['required', 'string', Password::min(8)],
         ]);
 
-        $remember = $request->filled('remember');
+        $user = User::where('email', $credentials['email'])->first();
 
-        if (Auth::attempt($credentials, $remember)) {
-            $request->session()->regenerate();
-
-            return redirect()->intended('dashboard');
+        if (!$user) {
+            return back()->withErrors(['email' => 'Incorrect email.'])->withInput();
         }
 
-        return back()->withErrors([
-            "Inccorect email or password",
-        ])->withInput();
+        if (!Hash::check($credentials['password'], $user->password)) {
+            return back()->withErrors(['password' => 'Incorrect password.']);
+        }
+
+        $remember = $request->filled('remember');
+
+        Auth::login($user, $remember);
+
+        $request->session()->regenerate();
+
+        return redirect()->intended('dashboard');
     }
 
     public function logout(Request $request)
