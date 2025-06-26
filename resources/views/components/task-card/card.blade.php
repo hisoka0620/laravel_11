@@ -1,7 +1,7 @@
 @props(['task'])
 
 <div x-data="taskCard(@js($task))" x-init="init()" x-cloak
-    class="taskCard bg-white rounded-2xl shadow-md p-6 hover:shadow-lg border-l-4 transition flex flex-col justify-between"
+    class="taskCard bg-white rounded-2xl shadow-md p-6 hover:shadow-2xl border-l-4 transition flex flex-col justify-between"
     :class="showUrgent ? 'border-yellow-500' : 'border-blue-400'">
     <div class="flex flex-col justify-between h-full">
         <x-task-card.urgent-banner />
